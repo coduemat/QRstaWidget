@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="95">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="SourceFiles"
+                   displayName="Исходные файлы"
+                   projectFiles="true">
+      <itemPath>ClRsta.cpp</itemPath>
+      <itemPath>MainForm.cpp</itemPath>
+      <itemPath>QRstaWidget.cpp</itemPath>
+      <itemPath>main.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="HeaderFiles"
+                   displayName="Файлы заголовков"
+                   projectFiles="true">
+      <itemPath>ClRsta.h</itemPath>
+      <itemPath>MainForm.h</itemPath>
+      <itemPath>QRstaWidget.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Файлы ресурсов"
+                   projectFiles="true">
+      <itemPath>MainForm.ui</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Файлы тестов"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Важные файлы"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="4">
+      <toolsSet>
+        <compilerSet>MinGW_1|MinGW</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <qt>
+        <modules>core gui widgets opengl</modules>
+        <defs>
+          <Elem>LIBS += -lqwtd</Elem>
+        </defs>
+      </qt>
+      <compileType>
+        <ccTool>
+          <incDir>
+            <pElem>../../../usr/qt/5.4.0/5.4/mingw491_32/include/qwt</pElem>
+            <pElem>../../../usr/share/clfft/include</pElem>
+            <pElem>../../../usr/share/opencl/include</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <linkerLibItems>
+            <linkerLibFileItem>../../../usr/qt/5.4.0/5.4/mingw491_32/lib/libqwtd.a</linkerLibFileItem>
+            <linkerLibFileItem>../../../usr/share/clfft/lib/import/libclFFT.dll.a</linkerLibFileItem>
+            <linkerLibFileItem>../../../usr/share/opencl/lib/libOpenCL.a</linkerLibFileItem>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <item path="ClRsta.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ClRsta.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="MainForm.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="MainForm.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="MainForm.ui" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="QRstaWidget.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="QRstaWidget.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="4">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <qt>
+        <buildMode>1</buildMode>
+        <modules>core gui widgets opengl</modules>
+      </qt>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+          <incDir>
+            <pElem>../../../usr/qt/5.4.0/5.4/mingw491_32/include/qwt</pElem>
+            <pElem>../../../usr/share/clfft/include</pElem>
+            <pElem>../../../usr/share/opencl/include</pElem>
+          </incDir>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+        <linkerTool>
+          <linkerLibItems>
+            <linkerLibFileItem>../../../usr/qt/5.4.0/5.4/mingw491_32/lib/libqwtd.a</linkerLibFileItem>
+            <linkerLibFileItem>../../../usr/share/clfft/lib/import/libclFFT.dll.a</linkerLibFileItem>
+            <linkerLibFileItem>../../../usr/share/opencl/lib/libOpenCL.a</linkerLibFileItem>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+      <item path="ClRsta.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="ClRsta.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="MainForm.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="MainForm.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="MainForm.ui" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="QRstaWidget.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="QRstaWidget.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
