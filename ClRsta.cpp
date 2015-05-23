@@ -8,12 +8,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include <wchar.h>
 #include <string.h>
 #include <cl/cl_gl.h>
 #include <GL/gl.h>
 #include <qopenglext.h>
-#include "cl_utils.h"
+#include "cl_routines.h"
 #include "ClRsta.h"
 
 ClRsta::ClRsta(size_t size, int height, int height_waterfall, 
@@ -57,6 +56,8 @@ ClRsta::~ClRsta() {
     err |= clReleaseMemObject(image2d);
     err |= clReleaseMemObject(image_waterfall);
     err |= clReleaseMemObject(spectrum);
+    err |= clReleaseMemObject(b_fft_in);
+    err |= clReleaseMemObject(b_fft_out);
     if (err != CL_SUCCESS) {
         printf("Error clReleaseMemObject %d\n", err);
     }
@@ -66,6 +67,7 @@ ClRsta::~ClRsta() {
     err |= clReleaseKernel(k_veclog10);
     err |= clReleaseKernel(k_vv2mul);
     err |= clReleaseKernel(k_mag2mtx);
+    err |= clReleaseKernel(k_fft);
     err |= clReleaseProgram(program);
     if (err != CL_SUCCESS) {
         printf("Error clReleaseKernel or clReleaseProgram\n");
@@ -83,6 +85,8 @@ ClRsta::~ClRsta() {
         printf("Error clReleaseCommandQueue or clReleaseContext\n");
     }
 
+    delete din   ;
+    delete dout  ;
     delete re_in ;
     delete im_in ;
     delete re_out;
@@ -97,7 +101,8 @@ void ClRsta::init() {
     err = 0;
     ctx = 0;
     queue = 0;
-
+    fft_p = 0;
+    
     cl_platform_id platforms[32];
     size_t psize = 0;
     err = clGetPlatformIDs(32, platforms, &psize);
@@ -242,14 +247,17 @@ cl_int ClRsta::initFft() {
 }
 
 cl_int ClRsta::initPrograms() {
-    const char *txt = (const char *)cl_utils_cl;
+    const char *txt = (const char *)routines_cl;
     
+    din  = new cl_float2[size];
+    dout = new cl_float2[size];
     mag = new cl_float[size];
     wnd = new cl_float[size];
     sum = new cl_float[size * height];
     frame = new cl_float[size * height];
     
-    if (mag == NULL || wnd == NULL || sum == NULL || frame == NULL) {
+    if (mag == NULL || wnd == NULL || sum == NULL || frame == NULL || 
+            din == NULL || dout == NULL) {
         printf("error new operator in initPrograms\n");
     }
     memset(mag  , 0, size * sizeof(*mag));
@@ -260,7 +268,7 @@ cl_int ClRsta::initPrograms() {
     blackmanharris(wnd, size);
     
     program = clCreateProgramWithSource(ctx, 1, &txt, 
-            &cl_utils_cl_len, &err);
+            &routines_cl_len, &err);
     
     if (err != CL_SUCCESS) {
         printf("Error clCreateProgramWithSource: %d\n", err);
@@ -372,6 +380,22 @@ cl_int ClRsta::initPrograms() {
     if (err != CL_SUCCESS) {
         printf("Error clSetKernelArg %d\n", err);
     }
+
+    b_fft_in = clCreateBuffer(ctx, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, 
+            size * sizeof(cl_float2), din, &err);
+    checkError(err, "clCreateBuffer b_fft_in", 1);
+    
+    b_fft_out = clCreateBuffer(ctx, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, 
+            size * sizeof(cl_float2), dout, &err);
+    checkError(err, "clCreateBuffer b_fft_out", 1);
+    
+    k_fft = clCreateKernel(program, "fftRadix2Kernel", &err);
+    checkError(err, "fftRadix2Kernel", 1);
+    err = 0;
+    err |= clSetKernelArg(k_fft, 0, sizeof(b_fft_in ), &b_fft_in );
+    err |= clSetKernelArg(k_fft, 1, sizeof(b_fft_out), &b_fft_out);
+    err |= clSetKernelArg(k_fft, 2, sizeof(fft_p    ), &fft_p    );
+    checkError(err, "clSetKernelArg k_fft", 1);
     
     return err;
 }
@@ -495,6 +519,16 @@ void ClRsta::blackmanharris(cl_float *buffer, size_t size) {
                 a[2] * cosf(p[1] * (cl_float)i) - 
                 a[3] * cosf(p[2] * (cl_float)i);
     }
+}
+
+cl_int ClRsta::fft2() {
+    err = clEnqueueWriteBuffer(queue, b_fft_in, CL_TRUE, 0, 
+            size * sizeof(*din), din, 0, NULL, NULL);
+    checkError(err, "fft2 clEnqueueWriteBuffer", 1);
+    err = clEnqueueNDRangeKernel(queue, k_vv2mul, 1, NULL, &size, NULL, 0, 
+            NULL, NULL);
+    err = clFinish(queue);
+    return err;
 }
 
 cl_int ClRsta::vv2mul() {
