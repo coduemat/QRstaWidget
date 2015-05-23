@@ -525,9 +525,18 @@ cl_int ClRsta::fft2() {
     err = clEnqueueWriteBuffer(queue, b_fft_in, CL_TRUE, 0, 
             size * sizeof(*din), din, 0, NULL, NULL);
     checkError(err, "fft2 clEnqueueWriteBuffer", 1);
-    err = clEnqueueNDRangeKernel(queue, k_vv2mul, 1, NULL, &size, NULL, 0, 
+    
+    fft_p = 1;
+    err = clSetKernelArg(k_fft, 2, sizeof(fft_p), &fft_p);
+    checkError(err, "clSetKernelArg k_fft", 1);
+    
+    err = clEnqueueNDRangeKernel(queue, k_fft, 1, NULL, &size, NULL, 0, 
             NULL, NULL);
+    checkError(err, "fft2 clEnqueueNDRangeKernel", 1);
+    
     err = clFinish(queue);
+    checkError(err, "fft2 clFinish", 1);
+    
     return err;
 }
 
@@ -626,6 +635,7 @@ cl_int ClRsta::add(cl_float* re, cl_float* im) {
     err = 0;
     err |= vv2mul();
     err |= fft();
+    err |= fft2();
     err |= veclog10();
     err |= mag2img();
     err |= img2tex();

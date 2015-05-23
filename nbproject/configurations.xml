@@ -19,11 +19,6 @@
     <logicalFolder name="ResourceFiles"
                    displayName="Файлы ресурсов"
                    projectFiles="true">
-      <logicalFolder name="cl" displayName="cl" projectFiles="true">
-        <itemPath>cl/cl2h.bat</itemPath>
-        <itemPath>cl/cl_utils.cl</itemPath>
-        <itemPath>cl/compile.bat</itemPath>
-      </logicalFolder>
       <itemPath>MainForm.ui</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -38,9 +33,6 @@
       <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
-  <sourceRootList>
-    <Elem>cl</Elem>
-  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Debug" type="4">
@@ -84,12 +76,6 @@
       <item path="QRstaWidget.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="QRstaWidget.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="cl/cl2h.bat" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="cl/cl_utils.cl" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="cl/compile.bat" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -143,12 +129,6 @@
       <item path="QRstaWidget.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="QRstaWidget.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="cl/cl2h.bat" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="cl/cl_utils.cl" ex="false" tool="0" flavor2="0">
-      </item>
-      <item path="cl/compile.bat" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>

@@ -702,7 +702,7 @@ build/Debug/MinGW_1-Windows/ClRsta.o: ClRsta.cpp ../../../usr/share/opencl/inclu
 		../../../usr/share/opencl/include/CL/cl.h \
 		../../../usr/share/opencl/include/CL/cl_platform.h \
 		../../../usr/qt/5.4.0/5.4/mingw491_32/include/QtGui/qopenglext.h \
-		cl_utils.h \
+		cl_routines.h \
 		ClRsta.h \
 		../../../usr/share/opencl/include/cl/cl.h \
 		../../../usr/share/clfft/include/clFFT.h \

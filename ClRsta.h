@@ -26,6 +26,9 @@ private:
     cl_kernel k_vv2mul;
     cl_kernel k_mag2mtx;
     cl_kernel k_img2tex;
+    cl_kernel k_fft;
+    cl_mem b_fft_in;
+    cl_mem b_fft_out;
     cl_mem buffersIn[2];
     cl_mem buffersOut[2];
     cl_mem bufferMag;
@@ -46,9 +49,12 @@ private:
     cl_float* wnd;
     cl_float* sum;
     cl_float* frame;
+    cl_float2* din;
+    cl_float2* dout;
     cl_uint height;
     cl_uint height_waterfall;
     cl_uint wline;
+    cl_uint fft_p;
     cl_float level;
     cl_float scale;
     cl_float weight;
@@ -59,6 +65,7 @@ private:
     cl_int initPrograms();
     cl_int initImage();
     void blackmanharris(cl_float *buffer, size_t size);
+    cl_int fft2();
     cl_int vv2mul();
     cl_int veclog10();
     cl_int mag2img();
