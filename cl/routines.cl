@@ -110,11 +110,11 @@ kernel void frame2tex(global float* frame, global float* sum,
 }
 
 // In-place DFT-2, output is (a,b). Arguments must be variables.
-#define DFT2(a,b) { float2 tmp = a - b; a += b; b = tmp; }
+#define DFT2(a, b) { float2 tmp = a - b; a += b; b = tmp; }
 
 // Return A*B
 float2 mul(float2 a, float2 b) {
-    return (float2)(a.x * b.x-a.y * b.y, a.x * b.y + a.y * b.x);
+    return (float2)(a.x * b.x - a.y * b.y, a.x * b.y + a.y * b.x);
 }
 
 // Return A * exp(K * ALPHA * i)
@@ -148,7 +148,7 @@ kernel void fftRadix2Kernel(global const float2 *x, global float2 *y, int p) {
     float2 u1 = twiddle(x[t], 1, alpha);
 
     // In-place DFT-2
-    DFT2(u0,u1);
+    DFT2(u0, u1);
 
     // Write output
     y    += j;

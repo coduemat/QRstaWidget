@@ -148,7 +148,7 @@ void QRstaWidget::load() {
     cl_float *re = new cl_float[fftLength];
     cl_float *im = new cl_float[fftLength];
     
-    fin = fopen("d:/music/noize.csv", "r");
+    fin = fopen("d:/music/sin.csv", "r");
 
     count = 0;
     do {
@@ -166,6 +166,15 @@ void QRstaWidget::load() {
             err = clrsta->add(re, im);
             if (err != CL_SUCCESS) {
                 printf("error add data %d\n", err);
+            }
+            if (count == 10) {
+                err = clrsta->add2(re, im);
+                cl_float2 *data = clrsta->getDout();
+                FILE *fout = fopen("d:/tmp/d.csv", "w");
+                for (int k = 0; k < fftLength; k++) {
+                    fprintf(fout, "%f\t%f\n", data[k].x, data[k].y);
+                }
+                fclose(fout);
             }
         }
         else {

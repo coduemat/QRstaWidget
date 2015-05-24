@@ -260,6 +260,7 @@ cl_int ClRsta::initPrograms() {
             din == NULL || dout == NULL) {
         printf("error new operator in initPrograms\n");
     }
+    memset(dout , 0, size * sizeof(*dout));
     memset(mag  , 0, size * sizeof(*mag));
     memset(wnd  , 0, size * sizeof(*wnd));
     memset(sum  , 0, size * height * sizeof(*sum  ));
@@ -387,6 +388,10 @@ cl_int ClRsta::initPrograms() {
     
     b_fft_out = clCreateBuffer(ctx, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, 
             size * sizeof(cl_float2), dout, &err);
+    checkError(err, "clCreateBuffer b_fft_out", 1);
+
+    err = clEnqueueWriteBuffer(queue, b_fft_out, CL_TRUE, 0, 
+            size * sizeof(*dout), dout, 0, NULL, NULL);
     checkError(err, "clCreateBuffer b_fft_out", 1);
     
     k_fft = clCreateKernel(program, "fftRadix2Kernel", &err);
@@ -522,21 +527,36 @@ void ClRsta::blackmanharris(cl_float *buffer, size_t size) {
 }
 
 cl_int ClRsta::fft2() {
+    size_t s = size / 2;
     err = clEnqueueWriteBuffer(queue, b_fft_in, CL_TRUE, 0, 
             size * sizeof(*din), din, 0, NULL, NULL);
     checkError(err, "fft2 clEnqueueWriteBuffer", 1);
     
-    fft_p = 1;
-    err = clSetKernelArg(k_fft, 2, sizeof(fft_p), &fft_p);
-    checkError(err, "clSetKernelArg k_fft", 1);
+    for (fft_p = 1; fft_p <= s; fft_p <<= 1) {
+        err = clSetKernelArg(k_fft, 2, sizeof(fft_p), &fft_p);
+        checkError(err, "clSetKernelArg k_fft", 1);
+
+        err = clEnqueueNDRangeKernel(queue, k_fft, 1, NULL, &s, NULL, 0, 
+                NULL, NULL);
+        checkError(err, "fft2 clEnqueueNDRangeKernel", 1);
+
+        err = clFinish(queue);
+        checkError(err, "fft2 clFinish", 1);
+        
+        if (fft_p != s) {
+            err = clEnqueueCopyBuffer(queue, b_fft_out, b_fft_in, 0, 0, 
+                    size * sizeof(*dout), 0, NULL, NULL);
+            checkError(err, "fft2 clEnqueueCopyBuffer", 1);
+            
+            err = clFinish(queue);
+            checkError(err, "fft2 clFinish", 1);
+        }
+    }
     
-    err = clEnqueueNDRangeKernel(queue, k_fft, 1, NULL, &size, NULL, 0, 
-            NULL, NULL);
-    checkError(err, "fft2 clEnqueueNDRangeKernel", 1);
-    
-    err = clFinish(queue);
-    checkError(err, "fft2 clFinish", 1);
-    
+    err = clEnqueueReadBuffer(queue, b_fft_out, CL_TRUE, 0, 
+            size * sizeof(*dout), dout, 0, NULL, NULL);
+    checkError(err, "fft2 clEnqueueReadBuffer", 1);
+
     return err;
 }
 
@@ -629,13 +649,16 @@ cl_uint ClRsta::getWline() const {
     return wline;
 }
 
+cl_float2* ClRsta::getDout() const {
+    return dout;
+}
+
 cl_int ClRsta::add(cl_float* re, cl_float* im) {
     memcpy(re_in, re, size * sizeof(*re_in));
     memcpy(im_in, im, size * sizeof(*im_in));
     err = 0;
     err |= vv2mul();
     err |= fft();
-    err |= fft2();
     err |= veclog10();
     err |= mag2img();
     err |= img2tex();
@@ -643,5 +666,16 @@ cl_int ClRsta::add(cl_float* re, cl_float* im) {
     if (err != CL_SUCCESS) {
         printf("error ClRsta::add %d\n", err);
     }
+    return err;
+}
+
+cl_int ClRsta::add2(cl_float* re, cl_float* im) {
+    for (int i = 0; i < size; i++) {
+        din[i].x = re[i];
+        din[i].y = im[i];
+    }
+    err = 0;
+    err |= fft2();
+    checkError(err, "add2 fft2", 1);
     return err;
 }

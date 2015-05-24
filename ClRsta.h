@@ -16,7 +16,9 @@ public:
         float level, float scale, float weight, float decay);
     virtual ~ClRsta();
     cl_int add(cl_float* re, cl_float* im);
-    cl_uint getWline() const;    
+    cl_int add2(cl_float* re, cl_float* im);
+    cl_uint getWline() const;
+    cl_float2* getDout() const;    
 private:
     cl_int err;
     cl_context ctx;
