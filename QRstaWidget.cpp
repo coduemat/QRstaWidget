@@ -145,36 +145,26 @@ void QRstaWidget::load() {
     cl_int err;
     FILE *fin;
 
-    cl_float *re = new cl_float[fftLength];
-    cl_float *im = new cl_float[fftLength];
+    cl_float2 *cplx = clrsta->getDin();
     
-    fin = fopen("d:/music/sin.csv", "r");
+    fin = fopen("d:/music/dubstep.csv", "r");
 
     count = 0;
     do {
         i = 0;
         for (i = 0; i < fftOverlap; i++) {
-            re[i] = re[i + fftLength - fftOverlap];
-            im[i] = im[i + fftLength - fftOverlap];
+            cplx[i].x = cplx[i + fftLength - fftOverlap].x;
+            cplx[i].y = cplx[i + fftLength - fftOverlap].y;
         }
         do {
-            n = fscanf(fin, "%f\t%f\n", &re[i], &im[i]);
+            n = fscanf(fin, "%f\t%f\n", &cplx[i].x, &cplx[i].y);
             i++;
         } while ((i < fftLength) && (n > 0));
 
         if (n > 0) {
-            err = clrsta->add(re, im);
+            err = clrsta->run();
             if (err != CL_SUCCESS) {
                 printf("error add data %d\n", err);
-            }
-            if (count == 10) {
-                err = clrsta->add2(re, im);
-                cl_float2 *data = clrsta->getDout();
-                FILE *fout = fopen("d:/tmp/d.csv", "w");
-                for (int k = 0; k < fftLength; k++) {
-                    fprintf(fout, "%f\t%f\n", data[k].x, data[k].y);
-                }
-                fclose(fout);
             }
         }
         else {
@@ -187,8 +177,6 @@ void QRstaWidget::load() {
     
 
     fclose(fin);
-    delete re;
-    delete im;
 }
 
 void QRstaWidget::setFftLength(int value) {

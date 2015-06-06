@@ -28,7 +28,6 @@ ClRsta::ClRsta(size_t size, int height, int height_waterfall,
 
     wline  = 0;
     init();
-    initFft();
     initImage();
     initPrograms();
 }
@@ -42,13 +41,6 @@ ClRsta::~ClRsta() {
     checkError(err, "clEnqueueReleaseGLObjects", 0);
         
     err = 0;
-    err |= clReleaseMemObject(buffersIn[0]);
-    err |= clReleaseMemObject(buffersIn[1]);
-    err |= clReleaseMemObject(buffersOut[0]);
-    err |= clReleaseMemObject(buffersOut[1]);
-    if (tmpBuffer != NULL) {
-        err |= clReleaseMemObject(tmpBuffer);
-    }
     err |= clReleaseMemObject(bufferMag);
     err |= clReleaseMemObject(bufferWnd);
     err |= clReleaseMemObject(bufferFrame);
@@ -63,9 +55,8 @@ ClRsta::~ClRsta() {
     }
 
     err = 0;
-    err |= clfftDestroyPlan(&(planHandle));
-    err |= clReleaseKernel(k_veclog10);
-    err |= clReleaseKernel(k_vv2mul);
+    err |= clReleaseKernel(k_cplx2db);
+    err |= clReleaseKernel(k_cplxmulv);
     err |= clReleaseKernel(k_mag2mtx);
     err |= clReleaseKernel(k_fft);
     err |= clReleaseProgram(program);
@@ -73,11 +64,6 @@ ClRsta::~ClRsta() {
         printf("Error clReleaseKernel or clReleaseProgram\n");
     }
 
-    clfftStatus status = clfftTeardown();
-    if (status != CLFFT_SUCCESS) {
-        printf("Error clfftTeardown %d\n", status);
-    }
-    
     err = 0;
     err |= clReleaseCommandQueue(queue);
     err |= clReleaseContext(ctx);
@@ -87,10 +73,6 @@ ClRsta::~ClRsta() {
 
     delete din   ;
     delete dout  ;
-    delete re_in ;
-    delete im_in ;
-    delete re_out;
-    delete im_out;
     delete mag;
     delete wnd;
     delete sum;
@@ -169,83 +151,6 @@ void ClRsta::init() {
     queue = clCreateCommandQueue(ctx, devices[0], 0, &err);
 }
 
-cl_int ClRsta::initFft() {
-
-    buffersIn[0]  = 0;
-    buffersIn[1]  = 0;
-    buffersOut[0] = 0;
-    buffersOut[2] = 0;
-    tmpBuffer = 0;
-
-    size_t tmpBufferSize = 0;
-    int status = 0;
-
-    re_in  = new cl_float[size];
-    im_in  = new cl_float[size];
-    re_out = new cl_float[size];
-    im_out = new cl_float[size];
-    if (re_in == NULL || im_in == NULL || re_out == NULL || im_out == NULL) {
-        printf("error new operator in initFft\n");
-    }
-    
-    memset(re_in , 0, size * sizeof(*re_in ));
-    memset(im_in , 0, size * sizeof(*im_in ));
-    memset(re_out, 0, size * sizeof(*re_out));
-    memset(im_out, 0, size * sizeof(*im_out));
-    
-    clfftDim dim = CLFFT_1D;
-    size_t clLengths[1] = {size};
-    clfftSetupData fftSetup;
-
-    err = 0;
-    err |= clfftInitSetupData(&fftSetup);
-    err |= clfftSetup(&fftSetup);
-    err |= clfftCreateDefaultPlan(&planHandle, ctx, dim, clLengths);
-    err |= clfftSetPlanPrecision(planHandle, CLFFT_SINGLE);
-    err |= clfftSetLayout(planHandle, CLFFT_COMPLEX_PLANAR, CLFFT_COMPLEX_PLANAR);
-    err |= clfftSetResultLocation(planHandle, CLFFT_OUTOFPLACE);
-    err |= clfftBakePlan(planHandle, 1, &queue, NULL, NULL);
-
-    status = clfftGetTmpBufSize(planHandle, &tmpBufferSize);
-
-    if ((status == 0) && (tmpBufferSize > 0)) {
-        tmpBuffer = clCreateBuffer(ctx, CL_MEM_READ_WRITE, 
-                tmpBufferSize, 0, &err);
-        if (err != CL_SUCCESS) {
-            printf("Error with tmpBuffer clCreateBuffer\n");
-        }
-    }
-
-    buffersIn[0] = clCreateBuffer(ctx, 
-            CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, 
-            size * sizeof(*re_in), re_in, &err);
-    if (err != CL_SUCCESS) {
-        printf("Error with buffersIn[0] clCreateBuffer\n");
-    }
-
-    buffersIn[1] = clCreateBuffer(ctx, 
-            CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR,
-            size * sizeof(*im_in), im_in, &err);
-    if (err != CL_SUCCESS) {
-        printf("Error with buffersIn[1] clCreateBuffer\n");
-    }
-  
-    buffersOut[0] = clCreateBuffer(ctx, 
-            CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, 
-            size * sizeof(*re_out), re_out, &err);
-    if (err != CL_SUCCESS) {
-        printf("Error with buffersOut[0] clCreateBuffer\n");
-    }
-
-    buffersOut[1] = clCreateBuffer(ctx, 
-            CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, 
-            size * sizeof(*im_out), im_out, &err);
-    if (err != CL_SUCCESS) {
-        printf("Error with buffersOut[1] clCreateBuffer\n");
-    }
-    return err;
-}
-
 cl_int ClRsta::initPrograms() {
     const char *txt = (const char *)routines_cl;
     
@@ -260,6 +165,7 @@ cl_int ClRsta::initPrograms() {
             din == NULL || dout == NULL) {
         printf("error new operator in initPrograms\n");
     }
+    
     memset(dout , 0, size * sizeof(*dout));
     memset(mag  , 0, size * sizeof(*mag));
     memset(wnd  , 0, size * sizeof(*wnd));
@@ -280,7 +186,19 @@ cl_int ClRsta::initPrograms() {
     if (err != CL_SUCCESS) {
         printf("Error clBuildProgram: %d\n", err);
     }
+
+    b_fft_in = clCreateBuffer(ctx, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, 
+            size * sizeof(cl_float2), din, &err);
+    checkError(err, "clCreateBuffer b_fft_in", 1);
     
+    b_fft_out = clCreateBuffer(ctx, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, 
+            size * sizeof(cl_float2), dout, &err);
+    checkError(err, "clCreateBuffer b_fft_out", 1);
+
+    err = clEnqueueWriteBuffer(queue, b_fft_out, CL_TRUE, 0, 
+            size * sizeof(*dout), dout, 0, NULL, NULL);
+    checkError(err, "clEnqueueWriteBuffer b_fft_out", 1);
+        
     bufferMag = clCreateBuffer(ctx, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, 
             size * sizeof(*mag), mag, &err);
     if (err != CL_SUCCESS) {
@@ -299,28 +217,26 @@ cl_int ClRsta::initPrograms() {
         printf("Error with bufferWnd clEnqueueWriteBuffer: %d\n", err);
     }
     
-    k_veclog10 = clCreateKernel(program, "veclog10", &err);
+    k_cplx2db = clCreateKernel(program, "cplx2db", &err);
     if (err != CL_SUCCESS) {
         printf("Error clCreateKernel: %d\n", err);
     }
     
     err = 0;
-    err |= clSetKernelArg(k_veclog10, 0, sizeof(buffersOut[0]), &buffersOut[0]);
-    err |= clSetKernelArg(k_veclog10, 1, sizeof(buffersOut[1]), &buffersOut[1]);
-    err |= clSetKernelArg(k_veclog10, 2, sizeof(bufferMag)    , &bufferMag    );
+    err |= clSetKernelArg(k_cplx2db, 0, sizeof(b_fft_out), &b_fft_out);
+    err |= clSetKernelArg(k_cplx2db, 1, sizeof(bufferMag), &bufferMag);
     if (err != CL_SUCCESS) {
         printf("Error clSetKernelArg %d\n", err);
     }
     
-    k_vv2mul = clCreateKernel(program, "vv2mul", &err);
+    k_cplxmulv = clCreateKernel(program, "cplxmulv", &err);
     if (err != CL_SUCCESS) {
         printf("Error clCreateKernel: %d\n", err);
     }
     
     err = 0;
-    err |= clSetKernelArg(k_vv2mul, 0, sizeof(bufferWnd)   , &bufferWnd   );
-    err |= clSetKernelArg(k_vv2mul, 1, sizeof(buffersIn[0]), &buffersIn[0]);
-    err |= clSetKernelArg(k_vv2mul, 2, sizeof(buffersIn[1]), &buffersIn[1]);
+    err |= clSetKernelArg(k_cplxmulv, 0, sizeof(b_fft_in ), &b_fft_in );
+    err |= clSetKernelArg(k_cplxmulv, 1, sizeof(bufferWnd), &bufferWnd);
     if (err != CL_SUCCESS) {
         printf("Error clSetKernelArg %d\n", err);
     }
@@ -382,18 +298,6 @@ cl_int ClRsta::initPrograms() {
         printf("Error clSetKernelArg %d\n", err);
     }
 
-    b_fft_in = clCreateBuffer(ctx, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, 
-            size * sizeof(cl_float2), din, &err);
-    checkError(err, "clCreateBuffer b_fft_in", 1);
-    
-    b_fft_out = clCreateBuffer(ctx, CL_MEM_READ_WRITE | CL_MEM_COPY_HOST_PTR, 
-            size * sizeof(cl_float2), dout, &err);
-    checkError(err, "clCreateBuffer b_fft_out", 1);
-
-    err = clEnqueueWriteBuffer(queue, b_fft_out, CL_TRUE, 0, 
-            size * sizeof(*dout), dout, 0, NULL, NULL);
-    checkError(err, "clCreateBuffer b_fft_out", 1);
-    
     k_fft = clCreateKernel(program, "fftRadix2Kernel", &err);
     checkError(err, "fftRadix2Kernel", 1);
     err = 0;
@@ -526,11 +430,8 @@ void ClRsta::blackmanharris(cl_float *buffer, size_t size) {
     }
 }
 
-cl_int ClRsta::fft2() {
+cl_int ClRsta::fft() {
     size_t s = size / 2;
-    err = clEnqueueWriteBuffer(queue, b_fft_in, CL_TRUE, 0, 
-            size * sizeof(*din), din, 0, NULL, NULL);
-    checkError(err, "fft2 clEnqueueWriteBuffer", 1);
     
     for (fft_p = 1; fft_p <= s; fft_p <<= 1) {
         err = clSetKernelArg(k_fft, 2, sizeof(fft_p), &fft_p);
@@ -538,42 +439,34 @@ cl_int ClRsta::fft2() {
 
         err = clEnqueueNDRangeKernel(queue, k_fft, 1, NULL, &s, NULL, 0, 
                 NULL, NULL);
-        checkError(err, "fft2 clEnqueueNDRangeKernel", 1);
+        checkError(err, "fft clEnqueueNDRangeKernel", 1);
 
         err = clFinish(queue);
-        checkError(err, "fft2 clFinish", 1);
+        checkError(err, "fft clFinish", 1);
         
         if (fft_p != s) {
             err = clEnqueueCopyBuffer(queue, b_fft_out, b_fft_in, 0, 0, 
                     size * sizeof(*dout), 0, NULL, NULL);
-            checkError(err, "fft2 clEnqueueCopyBuffer", 1);
+            checkError(err, "fft clEnqueueCopyBuffer", 1);
             
             err = clFinish(queue);
-            checkError(err, "fft2 clFinish", 1);
+            checkError(err, "fft clFinish", 1);
         }
     }
     
-    err = clEnqueueReadBuffer(queue, b_fft_out, CL_TRUE, 0, 
-            size * sizeof(*dout), dout, 0, NULL, NULL);
-    checkError(err, "fft2 clEnqueueReadBuffer", 1);
+//    err = clEnqueueReadBuffer(queue, b_fft_out, CL_TRUE, 0, 
+//            size * sizeof(*dout), dout, 0, NULL, NULL);
+//    checkError(err, "fft clEnqueueReadBuffer", 1);
 
     return err;
 }
 
-cl_int ClRsta::vv2mul() {
-    err = clEnqueueWriteBuffer(queue, buffersIn[0], CL_TRUE, 0, 
-            size * sizeof(*re_in), re_in, 0, NULL, NULL);
-    if (err != CL_SUCCESS) {
-        printf("Error with buffersIn[0] clEnqueueWriteBuffer\n");
-    }
+cl_int ClRsta::cplxmulv() {
+    err = clEnqueueWriteBuffer(queue, b_fft_in, CL_TRUE, 0, 
+            size * sizeof(*din), din, 0, NULL, NULL);
+    checkError(err, "fft clEnqueueWriteBuffer", 1);
 
-    err = clEnqueueWriteBuffer(queue, buffersIn[1], CL_TRUE, 0, 
-            size * sizeof(*im_in), im_in, 0, NULL, NULL);
-    if (err != CL_SUCCESS) {
-        printf("Error with buffersIn[1] clEnqueueWriteBuffer\n");
-    }
-
-    err = clEnqueueNDRangeKernel(queue, k_vv2mul, 1, NULL, &size, NULL, 0, 
+    err = clEnqueueNDRangeKernel(queue, k_cplxmulv, 1, NULL, &size, NULL, 0, 
             NULL, NULL);
     if (err != CL_SUCCESS) {
         printf("Error number %d\n", err);
@@ -587,15 +480,8 @@ cl_int ClRsta::vv2mul() {
     return err;
 }
 
-cl_int ClRsta::fft() {
-    err  = clfftEnqueueTransform(planHandle, CLFFT_FORWARD, 1, &queue, 0, NULL, 
-            NULL, buffersIn, buffersOut, tmpBuffer);
-    err |= clFinish(queue);
-    return err;
-}
-
-cl_int ClRsta::veclog10() {
-    err = clEnqueueNDRangeKernel(queue, k_veclog10, 1, NULL, &size, NULL, 0, 
+cl_int ClRsta::cplx2db() {
+    err = clEnqueueNDRangeKernel(queue, k_cplx2db, 1, NULL, &size, NULL, 0, 
             NULL, NULL);
     if (err != CL_SUCCESS) {
         printf("Error clEnqueueNDRangeKernel %d\n", err);
@@ -653,29 +539,21 @@ cl_float2* ClRsta::getDout() const {
     return dout;
 }
 
-cl_int ClRsta::add(cl_float* re, cl_float* im) {
-    memcpy(re_in, re, size * sizeof(*re_in));
-    memcpy(im_in, im, size * sizeof(*im_in));
+cl_float2* ClRsta::getDin() const {
+    return din;
+}
+
+cl_int ClRsta::run() {
+
     err = 0;
-    err |= vv2mul();
+    err |= cplxmulv();
     err |= fft();
-    err |= veclog10();
+    err |= cplx2db();
     err |= mag2img();
     err |= img2tex();
     
     if (err != CL_SUCCESS) {
         printf("error ClRsta::add %d\n", err);
     }
-    return err;
-}
-
-cl_int ClRsta::add2(cl_float* re, cl_float* im) {
-    for (int i = 0; i < size; i++) {
-        din[i].x = re[i];
-        din[i].y = im[i];
-    }
-    err = 0;
-    err |= fft2();
-    checkError(err, "add2 fft2", 1);
     return err;
 }

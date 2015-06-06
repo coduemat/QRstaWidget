@@ -22,15 +22,15 @@ inline float4 gray2color(float gray) {
     return color;
 }
 
-kernel void veclog10(global float* A, global float* B, global float* C) {
+kernel void cplx2db(global float2* c, global float* m) {
     const int idx = get_global_id(0);
-    C[idx] = log10(hypot(A[idx], B[idx])) * 10.0f;
+    m[idx] = log10(hypot(c[idx].x, c[idx].y)) * 10.0f;
 }
 
-kernel void vv2mul(global float* A, global float* B, global float* C) {
+kernel void cplxmulv(global float2* c, global float* v) {
     const int idx = get_global_id(0);
-    B[idx] = A[idx] * B[idx];
-    C[idx] = A[idx] * C[idx];
+    c[idx].x *= v[idx];
+    c[idx].y *= v[idx];
 }
 
 void lines(global float* img, uint width, uint height, int2 coord, float color) {
@@ -41,7 +41,6 @@ void lines(global float* img, uint width, uint height, int2 coord, float color) 
     const int range = 64;
     int b = (coord.y - range < 0) ? 0 : coord.y - range;
     for (int i = b; i <= coord.y; i++) {
-        // img[coord.x + i * width] +=  color * native_powr(0.993,  (float)(coord.y - i));
         img[coord.x + i * width] +=  color;
     }
 

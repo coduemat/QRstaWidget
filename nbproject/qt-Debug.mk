@@ -541,9 +541,6 @@ moc_MainForm.cpp: ui_MainForm.h \
 		ClRsta.h \
 		../../../usr/share/opencl/include/cl/cl.h \
 		../../../usr/share/opencl/include/CL/cl_platform.h \
-		../../../usr/share/clfft/include/clFFT.h \
-		../../../usr/share/opencl/include/CL/cl.h \
-		../../../usr/share/clfft/include/clFFT.version.h \
 		MainForm.h
 	'D:\usr\qt\5.4.0\5.4\mingw491_32\bin\moc.exe' $(DEFINES) -D__GNUC__ -DWIN32 -ID:/usr/qt/5.4.0/5.4/mingw491_32/mkspecs/win32-g++ -ID:/work/pc/QtRstaPlot/nbproject -ID:/work/usr/qt/5.4.0/5.4/mingw491_32/include/qwt -ID:/work/usr/share/clfft/include -ID:/work/usr/share/opencl/include -ID:/usr/qt/5.4.0/5.4/mingw491_32/include -ID:/usr/qt/5.4.0/5.4/mingw491_32/include/QtOpenGL -ID:/usr/qt/5.4.0/5.4/mingw491_32/include/QtWidgets -ID:/usr/qt/5.4.0/5.4/mingw491_32/include/QtGui -ID:/usr/qt/5.4.0/5.4/mingw491_32/include/QtCore -I. MainForm.h -o moc_MainForm.cpp
 
@@ -672,9 +669,6 @@ moc_QRstaWidget.cpp: ../../../usr/qt/5.4.0/5.4/mingw491_32/include/QtOpenGL/QGLW
 		ClRsta.h \
 		../../../usr/share/opencl/include/cl/cl.h \
 		../../../usr/share/opencl/include/CL/cl_platform.h \
-		../../../usr/share/clfft/include/clFFT.h \
-		../../../usr/share/opencl/include/CL/cl.h \
-		../../../usr/share/clfft/include/clFFT.version.h \
 		QRstaWidget.h
 	'D:\usr\qt\5.4.0\5.4\mingw491_32\bin\moc.exe' $(DEFINES) -D__GNUC__ -DWIN32 -ID:/usr/qt/5.4.0/5.4/mingw491_32/mkspecs/win32-g++ -ID:/work/pc/QtRstaPlot/nbproject -ID:/work/usr/qt/5.4.0/5.4/mingw491_32/include/qwt -ID:/work/usr/share/clfft/include -ID:/work/usr/share/opencl/include -ID:/usr/qt/5.4.0/5.4/mingw491_32/include -ID:/usr/qt/5.4.0/5.4/mingw491_32/include/QtOpenGL -ID:/usr/qt/5.4.0/5.4/mingw491_32/include/QtWidgets -ID:/usr/qt/5.4.0/5.4/mingw491_32/include/QtGui -ID:/usr/qt/5.4.0/5.4/mingw491_32/include/QtCore -I. QRstaWidget.h -o moc_QRstaWidget.cpp
 
@@ -704,9 +698,7 @@ build/Debug/MinGW_1-Windows/ClRsta.o: ClRsta.cpp ../../../usr/share/opencl/inclu
 		../../../usr/qt/5.4.0/5.4/mingw491_32/include/QtGui/qopenglext.h \
 		cl_routines.h \
 		ClRsta.h \
-		../../../usr/share/opencl/include/cl/cl.h \
-		../../../usr/share/clfft/include/clFFT.h \
-		../../../usr/share/clfft/include/clFFT.version.h
+		../../../usr/share/opencl/include/cl/cl.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/Debug/MinGW_1-Windows/ClRsta.o ClRsta.cpp
 
 build/Debug/MinGW_1-Windows/MainForm.o: MainForm.cpp MainForm.h \
@@ -881,9 +873,6 @@ build/Debug/MinGW_1-Windows/MainForm.o: MainForm.cpp MainForm.h \
 		ClRsta.h \
 		../../../usr/share/opencl/include/cl/cl.h \
 		../../../usr/share/opencl/include/CL/cl_platform.h \
-		../../../usr/share/clfft/include/clFFT.h \
-		../../../usr/share/opencl/include/CL/cl.h \
-		../../../usr/share/clfft/include/clFFT.version.h \
 		../../../usr/qt/5.4.0/5.4/mingw491_32/include/QtWidgets/QMessageBox \
 		../../../usr/qt/5.4.0/5.4/mingw491_32/include/QtWidgets/qmessagebox.h \
 		../../../usr/qt/5.4.0/5.4/mingw491_32/include/QtWidgets/qdialog.h
@@ -1018,10 +1007,7 @@ build/Debug/MinGW_1-Windows/QRstaWidget.o: QRstaWidget.cpp ../../../usr/qt/5.4.0
 		../../../usr/qt/5.4.0/5.4/mingw491_32/include/QtGui/qopenglfunctions.h \
 		ClRsta.h \
 		../../../usr/share/opencl/include/cl/cl.h \
-		../../../usr/share/opencl/include/CL/cl_platform.h \
-		../../../usr/share/clfft/include/clFFT.h \
-		../../../usr/share/opencl/include/CL/cl.h \
-		../../../usr/share/clfft/include/clFFT.version.h
+		../../../usr/share/opencl/include/CL/cl_platform.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/Debug/MinGW_1-Windows/QRstaWidget.o QRstaWidget.cpp
 
 build/Debug/MinGW_1-Windows/main.o: main.cpp ../../../usr/qt/5.4.0/5.4/mingw491_32/include/QtWidgets/QApplication \
@@ -1195,10 +1181,7 @@ build/Debug/MinGW_1-Windows/main.o: main.cpp ../../../usr/qt/5.4.0/5.4/mingw491_
 		../../../usr/qt/5.4.0/5.4/mingw491_32/include/QtGui/qopenglfunctions.h \
 		ClRsta.h \
 		../../../usr/share/opencl/include/cl/cl.h \
-		../../../usr/share/opencl/include/CL/cl_platform.h \
-		../../../usr/share/clfft/include/clFFT.h \
-		../../../usr/share/opencl/include/CL/cl.h \
-		../../../usr/share/clfft/include/clFFT.version.h
+		../../../usr/share/opencl/include/CL/cl_platform.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o build/Debug/MinGW_1-Windows/main.o main.cpp
 
 build/Debug/MinGW_1-Windows/moc_MainForm.o: moc_MainForm.cpp 
