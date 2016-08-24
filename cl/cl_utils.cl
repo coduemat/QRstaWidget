@@ -38,7 +38,7 @@ void lines(global float* img, uint width, uint height, int2 coord, float color) 
     if (coord.y >= height) {
         coord.y = -1;
     }
-    const int range = 64;
+    const int range = 32;
     int b = (coord.y - range < 0) ? 0 : coord.y - range;
     for (int i = b; i <= coord.y; i++) {
         img[coord.x + i * width] +=  color;

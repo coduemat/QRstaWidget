@@ -8,12 +8,15 @@
 #ifndef CLRSTA_H
 #define	CLRSTA_H
 #include <cl/cl.h>
+#include <QOpenGLFunctions_2_1>
 
-class ClRsta {
+class ClRsta : protected QOpenGLFunctions_2_1 {
 public:
     ClRsta(size_t size, int height, int height_waterfall, 
         float level, float scale, float weight, float decay);
     virtual ~ClRsta();
+    void init();
+
     cl_int run();
     cl_uint getWline() const;
     cl_float2* getDout() const;
@@ -54,7 +57,6 @@ private:
     cl_float weight;
     cl_float decay;
     
-    void init();
     cl_int initPrograms();
     cl_int initImage();
     void blackmanharris(cl_float *buffer, size_t size);

@@ -1,136 +1,81 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configurationDescriptor version="95">
+<configurationDescriptor version="97">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
-    <logicalFolder name="SourceFiles"
-                   displayName="Исходные файлы"
-                   projectFiles="true">
-      <itemPath>ClRsta.cpp</itemPath>
-      <itemPath>MainForm.cpp</itemPath>
-      <itemPath>QRstaWidget.cpp</itemPath>
-      <itemPath>main.cpp</itemPath>
-    </logicalFolder>
-    <logicalFolder name="HeaderFiles"
-                   displayName="Файлы заголовков"
-                   projectFiles="true">
-      <itemPath>ClRsta.h</itemPath>
-      <itemPath>MainForm.h</itemPath>
-      <itemPath>QRstaWidget.h</itemPath>
-    </logicalFolder>
-    <logicalFolder name="ResourceFiles"
-                   displayName="Файлы ресурсов"
-                   projectFiles="true">
-      <itemPath>MainForm.ui</itemPath>
-    </logicalFolder>
-    <logicalFolder name="TestFiles"
-                   displayName="Файлы тестов"
-                   projectFiles="false"
-                   kind="TEST_LOGICAL_FOLDER">
-    </logicalFolder>
+    <df root="." name="0">
+      <in>ClRsta.cpp</in>
+      <in>MainForm.cpp</in>
+      <in>QRstaWidget.cpp</in>
+      <in>main.cpp</in>
+      <in>moc_MainForm.cpp</in>
+      <in>moc_QRstaWidget.cpp</in>
+    </df>
     <logicalFolder name="ExternalFiles"
-                   displayName="Важные файлы"
+                   displayName="Important Files"
                    projectFiles="false"
                    kind="IMPORTANT_FILES_FOLDER">
       <itemPath>Makefile</itemPath>
+      <itemPath>QRstaWidget.pro</itemPath>
+      <itemPath>nbproject/private/launcher.properties</itemPath>
     </logicalFolder>
   </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
-    <conf name="Debug" type="4">
-      <toolsSet>
-        <compilerSet>MinGW_1|MinGW</compilerSet>
-        <dependencyChecking>true</dependencyChecking>
-        <rebuildPropChanged>false</rebuildPropChanged>
-      </toolsSet>
-      <qt>
-        <modules>core gui widgets opengl</modules>
-        <defs>
-          <Elem>LIBS += -lqwtd</Elem>
-        </defs>
-      </qt>
-      <compileType>
-        <ccTool>
-          <incDir>
-            <pElem>../../../usr/qt/5.4.0/5.4/mingw491_32/include/qwt</pElem>
-            <pElem>../../../usr/share/clfft/include</pElem>
-            <pElem>../../../usr/share/opencl/include</pElem>
-          </incDir>
-        </ccTool>
-        <linkerTool>
-          <linkerLibItems>
-            <linkerLibFileItem>../../../usr/qt/5.4.0/5.4/mingw491_32/lib/libqwtd.a</linkerLibFileItem>
-            <linkerLibFileItem>../../../usr/share/clfft/lib/import/libclFFT.dll.a</linkerLibFileItem>
-            <linkerLibFileItem>../../../usr/share/opencl/lib/libOpenCL.a</linkerLibFileItem>
-          </linkerLibItems>
-        </linkerTool>
-      </compileType>
-      <item path="ClRsta.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="ClRsta.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="MainForm.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="MainForm.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="MainForm.ui" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="QRstaWidget.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="QRstaWidget.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="main.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-    </conf>
-    <conf name="Release" type="4">
+    <conf name="Default" type="0">
       <toolsSet>
         <compilerSet>default</compilerSet>
-        <dependencyChecking>true</dependencyChecking>
+        <dependencyChecking>false</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
       </toolsSet>
-      <qt>
-        <buildMode>1</buildMode>
-        <modules>core gui widgets opengl</modules>
-      </qt>
-      <compileType>
-        <cTool>
-          <developmentMode>5</developmentMode>
-        </cTool>
-        <ccTool>
-          <developmentMode>5</developmentMode>
-          <incDir>
-            <pElem>../../../usr/qt/5.4.0/5.4/mingw491_32/include/qwt</pElem>
-            <pElem>../../../usr/share/clfft/include</pElem>
-            <pElem>../../../usr/share/opencl/include</pElem>
-          </incDir>
-        </ccTool>
-        <fortranCompilerTool>
-          <developmentMode>5</developmentMode>
-        </fortranCompilerTool>
-        <asmTool>
-          <developmentMode>5</developmentMode>
-        </asmTool>
-        <linkerTool>
-          <linkerLibItems>
-            <linkerLibFileItem>../../../usr/qt/5.4.0/5.4/mingw491_32/lib/libqwtd.a</linkerLibFileItem>
-            <linkerLibFileItem>../../../usr/share/clfft/lib/import/libclFFT.dll.a</linkerLibFileItem>
-            <linkerLibFileItem>../../../usr/share/opencl/lib/libOpenCL.a</linkerLibFileItem>
-          </linkerLibItems>
-        </linkerTool>
-      </compileType>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath>dist\QtRstaPlot.exe</executablePath>
+          <ccTool>
+            <incDir>
+              <pElem></pElem>
+              <pElem>../../../usr/share/opencl/include</pElem>
+              <pElem>../../../usr/qt/5.5/mingw492_32/include</pElem>
+              <pElem>../../../usr/qt/5.5/mingw492_32/include/QtOpenGL</pElem>
+              <pElem>../../../usr/qt/5.5/mingw492_32/include/QtWidgets</pElem>
+              <pElem>../../../usr/qt/5.5/mingw492_32/include/QtGui</pElem>
+              <pElem>../../../usr/qt/5.5/mingw492_32/include/QtANGLE</pElem>
+              <pElem>../../../usr/qt/5.5/mingw492_32/include/QtCore</pElem>
+              <pElem>../../../usr/qt/5.5/mingw492_32/mkspecs/win32-g++</pElem>
+            </incDir>
+            <preprocessorList>
+              <Elem>QT_CORE_LIB</Elem>
+              <Elem>QT_GUI_LIB</Elem>
+              <Elem>QT_NEEDS_QMAIN</Elem>
+              <Elem>QT_OPENGL_LIB</Elem>
+              <Elem>QT_WIDGETS_LIB</Elem>
+              <Elem>UNICODE</Elem>
+            </preprocessorList>
+          </ccTool>
+        </makeTool>
+        <preBuild>
+          <preBuildCommandWorkingDir>.</preBuildCommandWorkingDir>
+          <preBuildCommand>qmake QRstaWidget.pro QMAKE_CC=${IDE_CC} QMAKE_CXX=${IDE_CXX} QMAKE_CFLAGS="-g3 -gdwarf-2" QMAKE_CXXFLAGS="-g3 -gdwarf-2"</preBuildCommand>
+        </preBuild>
+      </makefileType>
       <item path="ClRsta.cpp" ex="false" tool="1" flavor2="0">
-      </item>
-      <item path="ClRsta.h" ex="false" tool="3" flavor2="0">
       </item>
       <item path="MainForm.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="MainForm.h" ex="false" tool="3" flavor2="0">
-      </item>
-      <item path="MainForm.ui" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="QRstaWidget.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="QRstaWidget.h" ex="false" tool="3" flavor2="0">
-      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="moc_MainForm.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="moc_QRstaWidget.cpp" ex="false" tool="1" flavor2="0">
       </item>
     </conf>
   </confs>

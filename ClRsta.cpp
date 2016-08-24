@@ -10,8 +10,7 @@
 #include <math.h>
 #include <string.h>
 #include <cl/cl_gl.h>
-#include <GL/gl.h>
-#include <qopenglext.h>
+//#include <qopenglext.h>
 #include "cl_routines.h"
 #include "ClRsta.h"
 
@@ -27,9 +26,7 @@ ClRsta::ClRsta(size_t size, int height, int height_waterfall,
     this->decay             = decay;
 
     wline  = 0;
-    init();
-    initImage();
-    initPrograms();
+//    init();
 }
 
 ClRsta::~ClRsta() {
@@ -131,7 +128,7 @@ void ClRsta::init() {
 //    else {
 //        printf("ext: %s\n", str);
 //    }
-    
+
     cl_context_properties props[] = {
         CL_CONTEXT_PLATFORM, (cl_context_properties)platforms[1], 
         CL_GL_CONTEXT_KHR  , (cl_context_properties)wglGetCurrentContext(),
@@ -149,6 +146,9 @@ void ClRsta::init() {
     }
 
     queue = clCreateCommandQueue(ctx, devices[0], 0, &err);
+    
+    initImage();
+    initPrograms();
 }
 
 cl_int ClRsta::initPrograms() {

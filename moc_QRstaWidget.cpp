@@ -1,7 +1,7 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'QRstaWidget.h'
 **
-** Created by: The Qt Meta Object Compiler version 67 (Qt 5.4.0)
+** Created by: The Qt Meta Object Compiler version 67 (Qt 5.5.1)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -12,7 +12,7 @@
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'QRstaWidget.h' doesn't include <QObject>."
 #elif Q_MOC_OUTPUT_REVISION != 67
-#error "This file was generated using the moc from 5.4.0. It"
+#error "This file was generated using the moc from 5.5.1. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
@@ -20,11 +20,11 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_QRstaWidget_t {
     QByteArrayData data[5];
-    char stringdata[60];
+    char stringdata0[60];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_QRstaWidget_t, stringdata) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_QRstaWidget_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
 static const qt_meta_stringdata_QRstaWidget_t qt_meta_stringdata_QRstaWidget = {
@@ -65,6 +65,33 @@ static const uint qt_meta_data_QRstaWidget[] = {
 
 void QRstaWidget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
+
+#ifndef QT_NO_PROPERTIES
+    if (_c == QMetaObject::ReadProperty) {
+        QRstaWidget *_t = static_cast<QRstaWidget *>(_o);
+        Q_UNUSED(_t)
+        void *_v = _a[0];
+        switch (_id) {
+        case 0: *reinterpret_cast< int*>(_v) = _t->getFftLength(); break;
+        case 1: *reinterpret_cast< int*>(_v) = _t->getFftOverlap(); break;
+        case 2: *reinterpret_cast< int*>(_v) = _t->getRstaHeight(); break;
+        case 3: *reinterpret_cast< int*>(_v) = _t->getWaterfallHeight(); break;
+        default: break;
+        }
+    } else if (_c == QMetaObject::WriteProperty) {
+        QRstaWidget *_t = static_cast<QRstaWidget *>(_o);
+        Q_UNUSED(_t)
+        void *_v = _a[0];
+        switch (_id) {
+        case 0: _t->setFftLength(*reinterpret_cast< int*>(_v)); break;
+        case 1: _t->setFftOverlap(*reinterpret_cast< int*>(_v)); break;
+        case 2: _t->setRstaHeight(*reinterpret_cast< int*>(_v)); break;
+        case 3: _t->setWaterfallHeight(*reinterpret_cast< int*>(_v)); break;
+        default: break;
+        }
+    } else if (_c == QMetaObject::ResetProperty) {
+    }
+#endif // QT_NO_PROPERTIES
     Q_UNUSED(_o);
     Q_UNUSED(_id);
     Q_UNUSED(_c);
@@ -85,7 +112,7 @@ const QMetaObject *QRstaWidget::metaObject() const
 void *QRstaWidget::qt_metacast(const char *_clname)
 {
     if (!_clname) return Q_NULLPTR;
-    if (!strcmp(_clname, qt_meta_stringdata_QRstaWidget.stringdata))
+    if (!strcmp(_clname, qt_meta_stringdata_QRstaWidget.stringdata0))
         return static_cast<void*>(const_cast< QRstaWidget*>(this));
     if (!strcmp(_clname, "QGLFunctions"))
         return static_cast< QGLFunctions*>(const_cast< QRstaWidget*>(this));
@@ -99,27 +126,9 @@ int QRstaWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         return _id;
     
 #ifndef QT_NO_PROPERTIES
-     if (_c == QMetaObject::ReadProperty) {
-        void *_v = _a[0];
-        switch (_id) {
-        case 0: *reinterpret_cast< int*>(_v) = getFftLength(); break;
-        case 1: *reinterpret_cast< int*>(_v) = getFftOverlap(); break;
-        case 2: *reinterpret_cast< int*>(_v) = getRstaHeight(); break;
-        case 3: *reinterpret_cast< int*>(_v) = getWaterfallHeight(); break;
-        default: break;
-        }
-        _id -= 4;
-    } else if (_c == QMetaObject::WriteProperty) {
-        void *_v = _a[0];
-        switch (_id) {
-        case 0: setFftLength(*reinterpret_cast< int*>(_v)); break;
-        case 1: setFftOverlap(*reinterpret_cast< int*>(_v)); break;
-        case 2: setRstaHeight(*reinterpret_cast< int*>(_v)); break;
-        case 3: setWaterfallHeight(*reinterpret_cast< int*>(_v)); break;
-        default: break;
-        }
-        _id -= 4;
-    } else if (_c == QMetaObject::ResetProperty) {
+   if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
+            || _c == QMetaObject::ResetProperty || _c == QMetaObject::RegisterPropertyMetaType) {
+        qt_static_metacall(this, _c, _id, _a);
         _id -= 4;
     } else if (_c == QMetaObject::QueryPropertyDesignable) {
         _id -= 4;
@@ -130,10 +139,6 @@ int QRstaWidget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     } else if (_c == QMetaObject::QueryPropertyEditable) {
         _id -= 4;
     } else if (_c == QMetaObject::QueryPropertyUser) {
-        _id -= 4;
-    } else if (_c == QMetaObject::RegisterPropertyMetaType) {
-        if (_id < 4)
-            *reinterpret_cast<int*>(_a[0]) = -1;
         _id -= 4;
     }
 #endif // QT_NO_PROPERTIES

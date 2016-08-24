@@ -13,7 +13,7 @@
 
 #include "ClRsta.h"
 
-class QRstaWidget : public QGLWidget, protected QGLFunctions{
+class QRstaWidget : public QGLWidget, /*protected QGLFunctions, */private ClRsta{
     Q_OBJECT
     Q_PROPERTY ( int FftLength READ getFftLength WRITE setFftLength )
     Q_PROPERTY ( int FftOverlap READ getFftOverlap WRITE setFftOverlap )
@@ -21,7 +21,16 @@ class QRstaWidget : public QGLWidget, protected QGLFunctions{
     Q_PROPERTY ( int WaterfallHeight READ getWaterfallHeight WRITE setWaterfallHeight )
     
 public:
-    QRstaWidget();
+    QRstaWidget(
+            size_t size = FftLength, 
+            int height = RstaHeight, 
+            int height_waterfall = WaterfallHeight, 
+            float level = FftLevel, 
+            float scale = FftScale, 
+            float weight = RstaWeight, 
+            float decay = RstaDecay
+        );
+    
     virtual ~QRstaWidget();
     void load();
     
@@ -45,7 +54,7 @@ public:
     
 private:
     static const int FftLength          = 1024;
-    static const int FftOverlap         = 768;
+    static const int FftOverlap         = 0;
     static const int RstaHeight         = 256;
     static const int WaterfallHeight    = 256;
     static const float FftLevel         = 45.0f;
@@ -58,7 +67,6 @@ private:
     
     GLuint texture[2];
     GLuint buffer;
-    ClRsta *clrsta;
     
     int fftLength;
     int fftOverlap;

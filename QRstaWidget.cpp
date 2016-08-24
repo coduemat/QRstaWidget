@@ -9,10 +9,14 @@
 #include <stdlib.h>
 #include <qguiapplication.h>
 #include <math.h>
+#include <time.h>
 
 #include "QRstaWidget.h"
 
-QRstaWidget::QRstaWidget() {
+QRstaWidget::QRstaWidget(size_t size, int height, int height_waterfall, 
+        float level, float scale, float weight, float decay) : 
+        ClRsta (size, height, height_waterfall, level, scale, weight, decay){
+    
     setFftLength(FftLength);
     setFftOverlap(FftOverlap);
     setRstaHeight(RstaHeight);
@@ -25,16 +29,16 @@ QRstaWidget::QRstaWidget() {
     texture[0] = 0;
     texture[1] = 0;
     buffer = 0;
-    clrsta = NULL;
 }
 
 QRstaWidget::~QRstaWidget() {
-    delete clrsta;
+
 }
 
 void QRstaWidget::initializeGL() {
-    initializeGLFunctions(context());
-    
+
+    initializeOpenGLFunctions();
+
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(-0.5, 0.5, 0.5, -0.5, -1000, 1000);
@@ -72,7 +76,8 @@ void QRstaWidget::initializeGL() {
         line[i + 1] = -0.0f;
     }
 
-    makeCurrent();
+//    makeCurrent(); // TODO see doc initializeGL, is no need
+    
     glGenBuffers(1, &buffer);
     printf("ids %d \n", buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -80,18 +85,12 @@ void QRstaWidget::initializeGL() {
     glBufferData(GL_ARRAY_BUFFER, fftLength * 2 * sizeof(cl_float),
             line, GL_STATIC_DRAW);
     
-    clrsta = new ClRsta(
-            fftLength, 
-            rstaHeight, 
-            waterfallHeight, 
-            fftLevel, 
-            fftScale, 
-            rstaWeight, 
-            rstaDecay
-        );
     delete drsta;
     delete dwtrfl;
     delete line;
+
+    this->init();
+    
     fflush(stdout);
 }
 
@@ -113,7 +112,7 @@ void QRstaWidget::paintGL() {
     glTexCoord2f(-0.5, 0.0); glVertex2f(-0.5,  0.0);
     glEnd();
     
-    float offset = (float)clrsta->getWline() / (float)waterfallHeight;
+    float offset = (float)this->getWline() / (float)waterfallHeight;
     
     glBindTexture(GL_TEXTURE_2D, texture[1]);
     glBegin(GL_QUADS);
@@ -145,10 +144,11 @@ void QRstaWidget::load() {
     cl_int err;
     FILE *fin;
 
-    cl_float2 *cplx = clrsta->getDin();
+    cl_float2 *cplx = this->getDin();
     
-    fin = fopen("d:/music/dubstep.csv", "r");
-
+    fin = fopen("d:/music/sputnik.csv", "r");
+    int32_t t = time(0);
+    
     count = 0;
     do {
         i = 0;
@@ -162,7 +162,7 @@ void QRstaWidget::load() {
         } while ((i < fftLength) && (n > 0));
 
         if (n > 0) {
-            err = clrsta->run();
+            err = this->run();
             if (err != CL_SUCCESS) {
                 printf("error add data %d\n", err);
             }
@@ -175,7 +175,7 @@ void QRstaWidget::load() {
         qApp->processEvents();
     } while (!feof(fin) && (n > 0) && (err == CL_SUCCESS)/* && (count < 1024)*/);
     
-
+    printf("time: %d\n", time(0) - t);
     fclose(fin);
 }
 
