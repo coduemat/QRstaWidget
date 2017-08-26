@@ -12,6 +12,7 @@
 #include <time.h>
 
 #include "QRstaWidget.h"
+#include <GL/glx.h>
 
 QRstaWidget::QRstaWidget(size_t size, int height, int height_waterfall, 
         float level, float scale, float weight, float decay) : 
@@ -53,7 +54,7 @@ void QRstaWidget::initializeGL() {
     memset(dwtrfl, 0, fftLength * waterfallHeight * sizeof(uint32_t));
         
     glGenTextures(2, texture);
-    printf("ids %d %d \n", texture[0], texture[1]);
+    qWarning("ids %d %d \n", texture[0], texture[1]);
     glBindTexture(GL_TEXTURE_2D, texture[0]);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -79,7 +80,7 @@ void QRstaWidget::initializeGL() {
 //    makeCurrent(); // TODO see doc initializeGL, is no need
     
     glGenBuffers(1, &buffer);
-    printf("ids %d \n", buffer);
+    qWarning("ids %d \n", buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glVertexPointer(2, GL_FLOAT, 0, 0);
     glBufferData(GL_ARRAY_BUFFER, fftLength * 2 * sizeof(cl_float),
@@ -89,9 +90,7 @@ void QRstaWidget::initializeGL() {
     delete dwtrfl;
     delete line;
 
-    this->init();
-    
-    fflush(stdout);
+    this->init((cl_context_properties)glXGetCurrentContext(), (cl_context_properties)glXGetCurrentDisplay());
 }
 
 void QRstaWidget::paintGL() {
@@ -143,10 +142,16 @@ void QRstaWidget::load() {
     int i, n, count;
     cl_int err;
     FILE *fin;
-
+    char line[80];
+    float tmp;
+    n = 0;
     cl_float2 *cplx = this->getDin();
     
-    fin = fopen("d:/music/sputnik.csv", "r");
+    fin = fopen("/home/taran/Downloads/intro.txt", "r");
+    if (!fin) {
+        qWarning("can't open file\n");
+        return;
+    }
     int32_t t = time(0);
     
     count = 0;
@@ -157,25 +162,36 @@ void QRstaWidget::load() {
             cplx[i].y = cplx[i + fftLength - fftOverlap].y;
         }
         do {
-            n = fscanf(fin, "%f\t%f\n", &cplx[i].x, &cplx[i].y);
-            i++;
-        } while ((i < fftLength) && (n > 0));
+            if (fgets(line, sizeof(line), fin)) {
+                if (line[0] != ';') {
+                    n = sscanf(line, "%f%f%f", &tmp, &cplx[i].x, &cplx[i].y);
+                    if (n >= 3) {
+                        i++;
+                    }
+                }
+            }
+            else {
+                break;
+            }
+//            n = fscanf(fin, "%f\t%f\n", &cplx[i].x, &cplx[i].y);
+//            i++;
+        } while ((i < fftLength) && !feof(fin));
 
         if (n > 0) {
             err = this->run();
             if (err != CL_SUCCESS) {
-                printf("error add data %d\n", err);
+                qWarning("error add data %d\n", err);
             }
         }
         else {
-            printf("n = %d\n", n);
+            qWarning("n = %d\n", n);
         }
         count++;
         repaint();
         qApp->processEvents();
     } while (!feof(fin) && (n > 0) && (err == CL_SUCCESS)/* && (count < 1024)*/);
     
-    printf("time: %d\n", time(0) - t);
+    qWarning("time: %ld\n", time(0) - t);
     fclose(fin);
 }
 

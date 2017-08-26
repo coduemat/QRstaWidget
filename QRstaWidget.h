@@ -9,7 +9,7 @@
 #define	QRSTAWIDGET_H
 
 #include <QGLWidget>
-#include <QGLFunctions>
+//#include <QGLFunctions>
 
 #include "ClRsta.h"
 
@@ -54,13 +54,13 @@ public:
     
 private:
     static const int FftLength          = 1024;
-    static const int FftOverlap         = 0;
-    static const int RstaHeight         = 256;
-    static const int WaterfallHeight    = 256;
+    static const int FftOverlap         = 768;
+    static const int RstaHeight         = 512;
+    static const int WaterfallHeight    = 512;
     static const float FftLevel         = 45.0f;
-    static const float FftScale         = 4.0f;
-    static const float RstaWeight       = 0.1f;
-    static const float RstaDecay        = 0.97f;
+    static const float FftScale         = 8.0f;
+    static const float RstaWeight       = 0.02;//0.1f;
+    static const float RstaDecay        = 0.99;//0.97f;
     
     static const int FftLengthMin       = 8;
     static const int FftLengthMax       = 32768;

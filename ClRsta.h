@@ -7,7 +7,7 @@
 
 #ifndef CLRSTA_H
 #define	CLRSTA_H
-#include <cl/cl.h>
+#include <CL/cl.h>
 #include <QOpenGLFunctions_2_1>
 
 class ClRsta : protected QOpenGLFunctions_2_1 {
@@ -15,7 +15,7 @@ public:
     ClRsta(size_t size, int height, int height_waterfall, 
         float level, float scale, float weight, float decay);
     virtual ~ClRsta();
-    void init();
+    void init(cl_context_properties glx_context, cl_context_properties glx_display);
 
     cl_int run();
     cl_uint getWline() const;
